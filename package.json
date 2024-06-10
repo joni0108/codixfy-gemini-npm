@@ -1,7 +1,7 @@
 {
-    "name": "npm-package-name",
-    "description": "A description of the package",
-    "version": "1.0.0",
+    "name": "@codixfy/gemini",
+    "description": "An npm package for nodejs that makes easier working with Gemini AI API. Includes some useful methods solving common tasks, helping quick and stable development.",
+    "version": "0.0.1",
     "scripts": {
         "build": "tsup",
         "test": "vitest run",
@@ -13,22 +13,23 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/<user>/my_package.git"
+        "url": "git+https://github.com/joni0108/Codixfy-Gemini-Npm.git"
     },
     "keywords": [
-        "keyword1",
-        "keyword2"
+        "gemini",
+        "gemini-ai",
+        "gemini-api",
+        "easy-gemini",
+        "artificial-intelligence",
+        "ai",
+        "chatbot"
     ],
-    "author": "Your Name",
+    "author": "Jonathan Fernandez | Codixfy LLC",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/<user>/my_package/issues"
+        "url": "https://github.com/joni0108/Codixfy-Gemini-Npm/issues"
     },
-    "homepage": "https://github.com/monatheoctocat/my_package",
-    "funding": {
-        "type": "individual",
-        "url": "https://www.paypal.me/<id if need funding>"
-    },
+    "homepage": "https://github.com/joni0108/Codixfy-Gemini-Npm",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
