@@ -5,7 +5,6 @@ src
 .eslintignore
 .gitignore
 .tsconig.json
-CHANGELOG.md
 eslint.config.js
 tsup.config.ts
 vitest.config.ts
