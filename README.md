@@ -177,3 +177,38 @@ console.log(
 ```
 
 ### Harm Configurations
+
+By default, all the harm configurations of the models are set off (to NONE), but you can customize each of them to be activated when creating the instance.
+
+```ts
+safetySettings?: {
+        blockDangerousContent?: boolean
+        blockExplicitContent?: boolean
+        blockHarassmentContent?: boolean
+        blockHateContent?: boolean
+    }
+```
+
+Example, if you want to model to block the explicit content, you can do it the following way:
+
+```ts
+import { Gemini } from "@codixfy/gemini"
+
+const gemini = new Gemini(API_KEY, {
+    safetySettings: {
+        blockExplicitContent: true,
+    },
+})
+```
+
+And you can do so with each of the categories.
+
+## Contributing
+
+Feel free to contribute as you want with the project, if you want so, just open an issue, or make a pull request to the `dev` branch at the [repository](https://github.com/joni0108/Codixfy-Gemini-Npm/tree/dev).
+
+## TODO
+
+These are some features we will be implementing in future versions.
+
+-   [ ] More configurations to the model like temp, flexible safety settings, etc.

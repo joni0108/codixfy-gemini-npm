@@ -1,7 +1,7 @@
 {
     "name": "@codixfy/gemini",
     "description": "An npm package for nodejs that makes easier working with Gemini AI API. Includes some useful methods solving common tasks, helping quick and stable development.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "scripts": {
         "build": "tsup",
         "test": "vitest run",
