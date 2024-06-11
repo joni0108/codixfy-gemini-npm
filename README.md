@@ -4,9 +4,6 @@
   <a aria-label="NPM Version" href="https://www.npmjs.com/package/gemini-ai">
     <img alt="NPM Version" src="https://img.shields.io/npm/v/%40codixfy%2Fgemini?style=for-the-badge&logo=npm&logoColor=white&label=NPM%20VERSION&color=black">
   </a>
-  <a aria-label="NPM Download Count" href="https://www.npmjs.com/package/gemini-ai">
-    <img alt="" src="https://img.shields.io/npm/dt/%40codixfy%2Fgemini?label=Downloads&style=for-the-badge&color=27B2FF">
-  </a>
 </p>
 
 ## Why this package?
@@ -147,7 +144,7 @@ console.log(
 )
 ```
 
-## Complex configurations
+## Model Configurations
 
 When you create a new instance of Gemini just passing the API key as parameter, it does create an instance with default options, but you can configure these options passing an object as second parameter of the constructor.
 
@@ -202,6 +199,25 @@ const gemini = new Gemini(API_KEY, {
 ```
 
 And you can do so with each of the categories.
+
+### Model Selection
+
+Since version 1.1.0 you can choose the model you are using the folloing way:
+
+```ts
+import { Gemini } from "@codixfy/gemini"
+
+const gemini = new Gemini(API_KEY, {
+    model: "The model to use...",
+})
+```
+
+You can choose between the following models:
+
+-   **gemini-1.0-pro**: The basic version, only does support text
+-   **gemini-1.5-pro**: Multimodal
+-   **gemini-1.5-flash**: Multimodal, but quicker than the pro version (default selection)
+-   **gemini-pro-vision**: Multimodal
 
 ## Contributing
 
