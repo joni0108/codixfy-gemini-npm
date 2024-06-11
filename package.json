@@ -1,11 +1,12 @@
 {
-    "name": "npm-package-name",
-    "description": "A description of the package",
+    "name": "@codixfy/gemini",
+    "description": "An npm package for nodejs that makes easier working with Gemini AI API. Includes some useful methods solving common tasks, helping quick and stable development.",
     "version": "1.0.0",
     "scripts": {
         "build": "tsup",
         "test": "vitest run",
         "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
         "lint": "eslint ./src/**/*.ts",
         "lint:fix": "eslint ./src/**/*.ts --fix",
         "prepare": "husky",
@@ -13,22 +14,23 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/<user>/my_package.git"
+        "url": "git+https://github.com/joni0108/Codixfy-Gemini-Npm.git"
     },
     "keywords": [
-        "keyword1",
-        "keyword2"
+        "gemini",
+        "gemini-ai",
+        "gemini-api",
+        "easy-gemini",
+        "artificial-intelligence",
+        "ai",
+        "chatbot"
     ],
-    "author": "Your Name",
+    "author": "Jonathan Fernandez | Codixfy LLC",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/<user>/my_package/issues"
+        "url": "https://github.com/joni0108/Codixfy-Gemini-Npm/issues"
     },
-    "homepage": "https://github.com/monatheoctocat/my_package",
-    "funding": {
-        "type": "individual",
-        "url": "https://www.paypal.me/<id if need funding>"
-    },
+    "homepage": "https://github.com/joni0108/Codixfy-Gemini-Npm",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
@@ -36,11 +38,16 @@
         "@changesets/cli": "^2.27.5",
         "@eslint/js": "^9.4.0",
         "@types/eslint__js": "^8.42.3",
+        "@vitest/coverage-v8": "^1.6.0",
         "eslint": "^8.57.0",
         "husky": "^9.0.11",
         "tsup": "^8.1.0",
         "typescript": "^5.4.5",
         "typescript-eslint": "^7.12.0",
         "vitest": "^1.6.0"
+    },
+    "dependencies": {
+        "@google/generative-ai": "^0.12.0",
+        "base64-js": "^1.5.1"
     }
 }
