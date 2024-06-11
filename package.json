@@ -6,6 +6,7 @@
         "build": "tsup",
         "test": "vitest run",
         "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
         "lint": "eslint ./src/**/*.ts",
         "lint:fix": "eslint ./src/**/*.ts --fix",
         "prepare": "husky",
@@ -37,11 +38,16 @@
         "@changesets/cli": "^2.27.5",
         "@eslint/js": "^9.4.0",
         "@types/eslint__js": "^8.42.3",
+        "@vitest/coverage-v8": "^1.6.0",
         "eslint": "^8.57.0",
         "husky": "^9.0.11",
         "tsup": "^8.1.0",
         "typescript": "^5.4.5",
         "typescript-eslint": "^7.12.0",
         "vitest": "^1.6.0"
+    },
+    "dependencies": {
+        "@google/generative-ai": "^0.12.0",
+        "base64-js": "^1.5.1"
     }
 }
