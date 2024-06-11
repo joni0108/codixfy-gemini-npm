@@ -240,8 +240,6 @@ Feel free to contribute as you want with the project, if you want so, just open 
 
 See the changelog by clicking [here](https://github.com/joni0108/Codixfy-Gemini-Npm/blob/main/CHANGELOG.md).
 
-## TODO
+### Notes
 
-These are some features we will be implementing in future versions.
-
--   [ ] More configurations to the model like temp, flexible safety settings, etc.
+This project was inpired by different npm packages, most being [gemini-ai](https://github.com/EvanZhouDev/gemini-ai). This project uses the package `@google/generative-ai` under the hood which is a different approach, being our goal make easier the work with Gemini AI.
