@@ -1,7 +1,7 @@
 <h1 align="center">Gemini AI Package</h1>
 <p align="center">The easiest way to integrate Gemini AI</p>
 <p align="center">
-  <a aria-label="NPM Version" href="https://www.npmjs.com/package/gemini-ai">
+  <a aria-label="NPM Version" href="https://www.npmjs.com/package/@codixfy/gemini?activeTab=readme">
     <img alt="NPM Version" src="https://img.shields.io/npm/v/%40codixfy%2Fgemini?style=for-the-badge&logo=npm&logoColor=white&label=NPM%20VERSION&color=black">
   </a>
 </p>
