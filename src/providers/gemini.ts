@@ -5,6 +5,7 @@ const {
 } = require("@google/generative-ai")
 const Base64 = require("base64-js")
 
+// Types
 export type GeminiOptions = {
     model?:
         | "gemini-1.0-pro"
@@ -29,10 +30,10 @@ export type ContentsType = [
 
 export type MimeType = "image/png" | "image/jpeg" | "image/gif" | "image/webp"
 
+// Handles the messaging without context
 export class Gemini {
     private genAI: any
     protected model: any
-    private chatContext: any
     private currentModel:
         | "gemini-1.0-pro"
         | "gemini-pro-vision"
@@ -77,55 +78,19 @@ export class Gemini {
         })
 
         this.currentModel = options?.model || "gemini-1.5-flash"
-        this.chatContext = null
-    }
-
-    getChatContext() {
-        return this.chatContext
-    }
-
-    setChatContext(context: any) {
-        this.chatContext = context
-    }
-
-    async fileToGenerativePart(image: string) {
-        const mimeType: MimeType = await this.mimeTypeFromImage(image)
-
-        const image64 = await fetch(image)
-            .then((r) => r.arrayBuffer())
-            .then((a) => Base64.fromByteArray(new Uint8Array(a)))
-
-        return {
-            inline_data: {
-                data: image64,
-                mime_type: mimeType,
-            },
-        }
-    }
-
-    async mimeTypeFromImage(image: string) {
-        const extension = image.split(".")[image.split(".").length - 1]
-
-        switch (extension) {
-            case "jpg":
-            case "jpeg":
-                return "image/jpeg"
-            case "png":
-                return "image/png"
-            case "gif":
-                return "image/gif"
-            case "webp":
-                return "image/webp"
-            default:
-                throw new Error("Unsupported image type")
-        }
     }
 
     // Used to send a message without any context
-    async sendMessage(message: string, images?: string[]) {
+    async ask(
+        message: string,
+        extra?: {
+            images?: string[]
+            stream?: (data: string) => void
+        }
+    ) {
         const partsWithImages: any = []
 
-        if (images && images.length > 0) {
+        if (extra?.images && extra.images.length > 0) {
             // Check if the model supports images
             if (this.currentModel === "gemini-pro-vision") {
                 throw new Error(
@@ -133,8 +98,10 @@ export class Gemini {
                 )
             }
 
-            for (const image of images) {
-                partsWithImages.push(await this.fileToGenerativePart(image))
+            for (const image of extra.images) {
+                partsWithImages.push(
+                    await GeminiUtils.fileToGenerativePart(image)
+                )
             }
         }
 
@@ -156,16 +123,57 @@ export class Gemini {
 
         for await (const response of result.stream) {
             buffer.push(response.text())
+            if (extra?.stream) {
+                extra.stream(response.text())
+            }
         }
 
         return buffer.join(" ")
     }
 
-    // Used to send a message with context -> For custom context, modify the context object
-    async sendMessageWithContext(message: string, images?: string[]) {
+    createChat(chartContext?: any) {
+        return new GeminiChat(
+            this.model,
+            chartContext === null ? [] : chartContext,
+            this.currentModel
+        )
+    }
+}
+
+// Handles the chat context -> Non Exportable as it needs to be used internally
+class GeminiChat {
+    model: any
+    chatContext: any
+    currentModel:
+        | "gemini-1.0-pro"
+        | "gemini-pro-vision"
+        | "gemini-1.5-pro"
+        | "gemini-1.5-flash"
+
+    constructor(
+        model: any,
+        chatContext: any,
+        currentModel:
+            | "gemini-1.0-pro"
+            | "gemini-pro-vision"
+            | "gemini-1.5-pro"
+            | "gemini-1.5-flash"
+    ) {
+        this.model = model
+        this.chatContext = chatContext
+        this.currentModel = currentModel
+    }
+
+    async send(
+        message: string,
+        extra?: {
+            images?: string[]
+            stream?: (data: string) => void
+        }
+    ) {
         const partsWithImages: any = []
 
-        if (images && images.length > 0) {
+        if (extra?.images && extra.images.length > 0) {
             // Check if the model supports images
             if (this.currentModel === "gemini-pro-vision") {
                 throw new Error(
@@ -173,8 +181,10 @@ export class Gemini {
                 )
             }
 
-            for (const image of images) {
-                partsWithImages.push(await this.fileToGenerativePart(image))
+            for (const image of extra.images) {
+                partsWithImages.push(
+                    await GeminiUtils.fileToGenerativePart(image)
+                )
             }
         }
 
@@ -192,8 +202,6 @@ export class Gemini {
             ],
         })
 
-        this.setChatContext(this.chatContext)
-
         const contents: ContentsType = this.chatContext
 
         const result = await this.model.generateContentStream({ contents })
@@ -202,8 +210,58 @@ export class Gemini {
 
         for await (const response of result.stream) {
             buffer.push(response.text())
+            if (extra?.stream) {
+                extra.stream(response.text())
+            }
         }
 
         return buffer.join(" ")
+    }
+
+    async reset() {
+        this.chatContext = []
+    }
+
+    async save() {
+        return this.chatContext
+    }
+
+    async load(context: any) {
+        this.chatContext = context
+    }
+}
+
+export class GeminiUtils {
+    static async fileToGenerativePart(image: string) {
+        const mimeType: MimeType = await this.mimeTypeFromImage(image)
+
+        const image64 = await fetch(image)
+            .then((r) => r.arrayBuffer())
+            .then((a) => Base64.fromByteArray(new Uint8Array(a)))
+
+        return {
+            inline_data: {
+                data: image64,
+                mime_type: mimeType,
+            },
+        }
+    }
+
+    static async mimeTypeFromImage(image: string) {
+        const extension = image.split(".")[image.split(".").length - 1]
+
+        switch (extension) {
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg"
+            case "png":
+                return "image/png"
+            case "gif":
+                return "image/gif"
+            case "webp":
+                return "image/webp"
+            default:
+                throw new Error("Unsupported image type")
+        }
     }
 }

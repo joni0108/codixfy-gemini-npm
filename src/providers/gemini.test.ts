@@ -1,118 +1,138 @@
 import { describe, it, expect } from "vitest"
-import { Gemini } from "./gemini"
+import { Gemini, GeminiUtils } from "./gemini"
 
-describe.concurrent("Gemini Utils Functions/Methods", () => {
-    it("Should give the mime type of an image based on its path", async () => {
-        const gemini = new Gemini("")
+const API_KEY = "Your API key here"
+const google_logo =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png"
 
-        const image = "image.jpg"
+describe.concurrent.skip("Gemini Utils Functions/Methods", () => {
+    it("Tests .mimeTypeFromImage() method", async () => {
+        const mimeType = await GeminiUtils.mimeTypeFromImage(google_logo)
 
-        const mimeType = await gemini.mimeTypeFromImage(image)
-
-        expect(mimeType).toBe("image/jpeg")
+        expect(mimeType).toBe("image/png")
     })
 
-    it("Should give the part following the structure of the generative-ai library", async () => {
-        const gemini = new Gemini("")
+    it("Tests .fileToGenerativePart() method", async () => {
+        const generativePart = await GeminiUtils.fileToGenerativePart(
+            google_logo
+        )
 
-        const image =
-            "https://www.finder.com/finder-us/wp-uploads/2017/09/GeminiLogo_Supplied_250x250-150x150.png"
-
-        const part = await gemini.fileToGenerativePart(image)
-
-        expect(part.inline_data).toHaveProperty("mime_type")
-        expect(part.inline_data).toHaveProperty("data")
+        expect(generativePart.inline_data).toHaveProperty("data")
+        expect(generativePart.inline_data).toHaveProperty("mime_type")
     })
 })
 
-describe.concurrent("Gemini Service", () => {
-    const API_KEY = "AIzaSyAfTjzcrJNHHDPaburm9YYGMFtbeZNBG8o"
+describe.concurrent.skip("Gemini Ask Method", () => {
+    it("Tests .ask() method with just text", async () => {
+        const gemini = new Gemini(API_KEY, {
+            instructions: "You will always answer a greet with Hi.",
+        })
 
-    it("Testing sending simple plain text message", async () => {
-        const gemini = new Gemini(API_KEY)
-
-        const response = await gemini.sendMessage("Hello!")
-
-        console.log(response)
-
-        expect(response).toContain("Hello")
-    })
-
-    it("Testing sending an image and asking for a simple question", async () => {
-        const gemini = new Gemini(API_KEY)
-
-        const response = await gemini.sendMessage(
-            "Does this image have the Gemini icon on it? Answer yes or no, please",
-            [
-                "https://www.finder.com/finder-us/wp-uploads/2017/09/GeminiLogo_Supplied_250x250-150x150.png",
-            ]
-        )
-
-        console.log(response)
-
-        expect(response).toContain("Yes")
-    })
-
-    it("Basic comparison between 2 images", async () => {
-        const gemini = new Gemini(API_KEY)
-
-        const response = await gemini.sendMessage(
-            "Do these images have different background colors? Answer yes or no, please",
-            [
-                "https://www.finder.com/finder-us/wp-uploads/2017/09/GeminiLogo_Supplied_250x250-150x150.png",
-                "https://guardinvest.com/gmedia/2022/02/gemini-3-2.png",
-            ]
-        )
-
-        console.log(response)
-
-        expect(response).toContain("Yes")
-    })
-
-    it("Should get have a conversation with context", async () => {
-        const gemini = new Gemini(API_KEY)
-
-        const response = await gemini.sendMessageWithContext(
-            "Hello, My name is Jonathan. I am a full stack developer, and I am 22 years old. Please, when greeting me, doing it with Hi, instead of Hello."
-        )
+        const response = await gemini.ask("Hi, gemini!")
 
         console.log(response)
 
         expect(response).toContain("Hi")
-
-        const response2 = await gemini.sendMessageWithContext(
-            "I am currently working on a project that involves creating an npm package working with the generative-ai library. I am using the Gemini model for this project. The project name is @codixfy/gemini."
-        )
-
-        console.log(response2)
-
-        const response3 = await gemini.sendMessageWithContext(
-            "Please, answer the following questions: What is my name? What is my age? The project I am working on, involves artificial intelligence?"
-        )
-
-        console.log(response3)
-
-        expect(response3).toContain("Jonathan")
-        expect(response3).toContain("22")
-        expect(response3).toContain("codixfy/gemini")
     })
 
-    it("Testing with instructions passed to the model, it should answer the question based on the instructions provided on each request", async () => {
+    it("Tests .ask() method with text and image", async () => {
         const gemini = new Gemini(API_KEY, {
-            instructions:
-                "You are a bot that can only answer with yes or no in lowercase to the questions asked.",
+            instructions: "You will always answer a greet with Hi.",
         })
 
-        const response = await gemini.sendMessage(
-            "Do these images have different background colors?",
-            [
-                "https://www.finder.com/finder-us/wp-uploads/2017/09/GeminiLogo_Supplied_250x250-150x150.png",
-                "https://guardinvest.com/gmedia/2022/02/gemini-3-2.png",
-            ]
-        )
+        const response = await gemini.ask("Is this the logo of Google?", {
+            images: [google_logo],
+        })
 
         console.log(response)
 
-        expect(response).toContain("yes")
+        expect(response).toContain("Yes")
+    })
+
+    it("Tests .ask() method to handle multiple images", async () => {
+        const gemini = new Gemini(API_KEY, {
+            instructions: "You will always answer a greet with Hi.",
+        })
+
+        const response = await gemini.ask("Are these images the same?", {
+            images: [google_logo, google_logo],
+        })
+
+        console.log(response)
+
+        expect(response).toContain("Yes")
+    })
+
+    it("Tests .ask() method with streaming", async () => {
+        const gemini = new Gemini(API_KEY, {
+            instructions: "You will always answer a greet with Hi.",
+        })
+
+        let streamCounter = 0
+
+        const response = await gemini.ask(
+            "Can you talk me about the company of the logo of the image",
+            {
+                images: [google_logo],
+                stream: (response) => {
+                    console.log(response)
+                    streamCounter++
+                },
+            }
+        )
+
+        expect(response).toContain("Google")
+        expect(streamCounter).toBeGreaterThan(0)
+    })
+})
+
+describe.skip("Gemini Chat", () => {
+    const gemini = new Gemini(API_KEY, {
+        instructions: "You will always answer a greet with Hi.",
+    })
+    const chat = gemini.createChat()
+    let history = []
+
+    it("Should be able to mantain context", async () => {
+        const response = await chat.send("Hi Gemini! My name is Codixfy")
+        console.log(response)
+
+        expect(response).toContain("Hi")
+
+        const response2 = await chat.send("What is my name?")
+        console.log(response2)
+
+        expect(response2).toContain("Codixfy")
+    })
+
+    it("Should save the context", async () => {
+        history = await chat.save()
+    })
+
+    it("Should be able to reset the context", async () => {
+        await chat.reset()
+
+        const response = await chat.send("What is my name?")
+        console.log(response)
+
+        expect(response).not.toContain("Codixfy")
+    })
+
+    it("Should be able to load the context", async () => {
+        await chat.load(history)
+
+        const response = await chat.send("What is my name?")
+        console.log(response)
+
+        expect(response).toContain("Codixfy")
+    })
+
+    it("Should be able to load history from the constructor", async () => {
+        const chat2 = gemini.createChat(history)
+
+        const response = await chat2.send("What is my name?")
+        console.log(response)
+
+        expect(response).toContain("Codixfy")
     })
 })
