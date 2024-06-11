@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { Gemini, GeminiUtils } from "./gemini"
 
-const API_KEY = "Your API key here"
+// Add your testing API key here if you want to run the tests
+const API_KEY = ""
 const google_logo =
     "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png"
 
@@ -22,7 +23,7 @@ describe.concurrent.skip("Gemini Utils Functions/Methods", () => {
     })
 })
 
-describe.concurrent.skip("Gemini Ask Method", () => {
+describe.skip("Gemini Ask Method", () => {
     it("Tests .ask() method with just text", async () => {
         const gemini = new Gemini(API_KEY, {
             instructions: "You will always answer a greet with Hi.",
@@ -54,9 +55,12 @@ describe.concurrent.skip("Gemini Ask Method", () => {
             instructions: "You will always answer a greet with Hi.",
         })
 
-        const response = await gemini.ask("Are these images the same?", {
-            images: [google_logo, google_logo],
-        })
+        const response = await gemini.ask(
+            "Are these images the same? Answer with a Yes or No, please",
+            {
+                images: [google_logo, google_logo],
+            }
+        )
 
         console.log(response)
 

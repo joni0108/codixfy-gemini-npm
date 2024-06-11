@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Minor v1.2.0
+
+-   Now you can choose if you want to use a latest (non-stable) version of the model.
+-   Removed unuseful files from distribution pack. You can check them out on the Github whenever you want.
+
 ## Minor v1.1.0
 
 -   Now you can choose the model version you want to use when creating your model. See docs.

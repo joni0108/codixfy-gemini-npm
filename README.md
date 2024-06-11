@@ -219,9 +219,26 @@ You can choose between the following models:
 -   **gemini-1.5-flash**: Multimodal, but quicker than the pro version (default selection)
 -   **gemini-pro-vision**: Multimodal
 
+You can now choose the lastest not stable model by adding:
+
+```ts
+import { Gemini } from "@codixfy/gemini"
+
+const gemini = new Gemini(API_KEY, {
+    mode: "gemini-pro-vision"
+    useLatestModel: true,
+})
+```
+
+Remember, if you ignore the `model` property, it will use `gemini-1.5-flash` or `gemini-1.5-flash-latest` respectively, depending on the `useLatestModel` value toi be true | false | undefined.
+
 ## Contributing
 
 Feel free to contribute as you want with the project, if you want so, just open an issue, or make a pull request to the `dev` branch at the [repository](https://github.com/joni0108/Codixfy-Gemini-Npm/tree/dev).
+
+## CHANGELOG
+
+See the changelog by clicking [here](https://github.com/joni0108/Codixfy-Gemini-Npm/blob/main/CHANGELOG.md).
 
 ## TODO
 
