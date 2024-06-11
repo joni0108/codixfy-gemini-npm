@@ -1,0 +1,10 @@
+.husky
+coverage
+node_modules
+src
+.eslintignore
+.gitignore
+.tsconig.json
+eslint.config.js
+tsup.config.ts
+vitest.config.ts

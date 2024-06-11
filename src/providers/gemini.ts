@@ -6,12 +6,18 @@ const {
 const Base64 = require("base64-js")
 
 // Types
+export type Models =
+    | "gemini-1.0-pro"
+    | "gemini-pro-vision"
+    | "gemini-1.5-pro"
+    | "gemini-1.5-flash"
+    | "gemini-1.0-pro-latest"
+    | "gemini-pro-vision-latest"
+    | "gemini-1.5-pro-latest"
+    | "gemini-1.5-flash-latest"
+
 export type GeminiOptions = {
-    model?:
-        | "gemini-1.0-pro"
-        | "gemini-pro-vision"
-        | "gemini-1.5-pro"
-        | "gemini-1.5-flash"
+    model?: Models
     safetySettings?: {
         blockDangerousContent?: boolean
         blockExplicitContent?: boolean
@@ -19,6 +25,7 @@ export type GeminiOptions = {
         blockHateContent?: boolean
     }
     instructions?: string
+    useLatestModel?: boolean
 }
 
 export type ContentsType = [
@@ -34,16 +41,23 @@ export type MimeType = "image/png" | "image/jpeg" | "image/gif" | "image/webp"
 export class Gemini {
     private genAI: any
     protected model: any
-    private currentModel:
-        | "gemini-1.0-pro"
-        | "gemini-pro-vision"
-        | "gemini-1.5-pro"
-        | "gemini-1.5-flash"
+    private currentModel: Models
 
     constructor(apiKey: string, options?: GeminiOptions) {
         this.genAI = new GoogleGenerativeAI(apiKey)
+
+        this.currentModel = "gemini-1.5-flash"
+
+        if (options?.model) {
+            this.currentModel = options.model
+
+            if (options?.useLatestModel) {
+                this.currentModel += "-latest"
+            }
+        }
+
         this.model = this.genAI.getGenerativeModel({
-            model: options?.model || "gemini-1.5-flash",
+            model: this.currentModel,
             safetySettings: [
                 {
                     category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
@@ -76,8 +90,6 @@ export class Gemini {
             ],
             systemInstruction: options?.instructions || undefined,
         })
-
-        this.currentModel = options?.model || "gemini-1.5-flash"
     }
 
     // Used to send a message without any context
@@ -144,21 +156,9 @@ export class Gemini {
 class GeminiChat {
     model: any
     chatContext: any
-    currentModel:
-        | "gemini-1.0-pro"
-        | "gemini-pro-vision"
-        | "gemini-1.5-pro"
-        | "gemini-1.5-flash"
+    currentModel: Models
 
-    constructor(
-        model: any,
-        chatContext: any,
-        currentModel:
-            | "gemini-1.0-pro"
-            | "gemini-pro-vision"
-            | "gemini-1.5-pro"
-            | "gemini-1.5-flash"
-    ) {
+    constructor(model: any, chatContext: any, currentModel: Models) {
         this.model = model
         this.chatContext = chatContext
         this.currentModel = currentModel
