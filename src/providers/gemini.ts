@@ -6,6 +6,20 @@ const {
 const Base64 = require("base64-js")
 
 // Types
+/**
+ * Represents the various models available in the Gemini series.
+ * The different model types include standard, professional, vision, and flash versions.
+ *
+ * Available models:
+ * - "gemini-1.0-pro": Gemini version 1.0 professional model.
+ * - "gemini-pro-vision": Vision series in the professional model.
+ * - "gemini-1.5-pro": Gemini version 1.5 professional model.
+ * - "gemini-1.5-flash": Flash series model in the Gemini version 1.5.
+ * - "gemini-1.0-pro-latest": Latest variant of the Gemini version 1.0 professional model.
+ * - "gemini-pro-vision-latest": Latest variant of the professional vision series.
+ * - "gemini-1.5-pro-latest": Latest variant of the Gemini version 1.5 professional model.
+ * - "gemini-1.5-flash-latest": Latest variant in the flash series for Gemini version 1.5.
+ */
 export type Models =
     | "gemini-1.0-pro"
     | "gemini-pro-vision"
@@ -16,6 +30,9 @@ export type Models =
     | "gemini-1.5-pro-latest"
     | "gemini-1.5-flash-latest"
 
+/**
+ * Configuration options for Gemini service.
+ */
 export type GeminiOptions = {
     model?: Models
     safetySettings?: {
@@ -28,6 +45,16 @@ export type GeminiOptions = {
     useLatestModel?: boolean
 }
 
+/**
+ * Represents the type definition for contents, which includes an array of objects.
+ * Each object contains a `role` indicating the source of the content,
+ * and `parts`, which can be any type.
+ *
+ * @typedef {Object} ContentsType
+ * @property {"user" | "model"} role - The role of the content's source,
+ *                                    either "user" or "model".
+ * @property {any} parts - The content itself, which can be of any type.
+ */
 export type ContentsType = [
     {
         role: "user" | "model"
@@ -35,9 +62,20 @@ export type ContentsType = [
     }
 ]
 
+/**
+ * MimeType is a union type representing a set of common image MIME types.
+ *
+ * - "image/png": Indicates that the image file is in PNG format.
+ * - "image/jpeg": Indicates that the image file is in JPEG format.
+ * - "image/gif": Indicates that the image file is in GIF format.
+ * - "image/webp": Indicates that the image file is in WebP format.
+ */
 export type MimeType = "image/png" | "image/jpeg" | "image/gif" | "image/webp"
 
 // Handles the messaging without context
+/**
+ * Class representing the Gemini model for generating AI content.
+ */
 export class Gemini {
     private genAI: any
     protected model: any
@@ -153,6 +191,10 @@ export class Gemini {
 }
 
 // Handles the chat context -> Non Exportable as it needs to be used internally
+/**
+ * GeminiChat class is responsible for managing and interacting with a chat-based model.
+ * It can send messages, manage the chat context, and handle image processing for certain models.
+ */
 class GeminiChat {
     model: any
     chatContext: any
@@ -231,6 +273,9 @@ class GeminiChat {
     }
 }
 
+/**
+ * GeminiUtils class provides utility methods related to image processing.
+ */
 export class GeminiUtils {
     static async fileToGenerativePart(image: string) {
         const mimeType: MimeType = await this.mimeTypeFromImage(image)
