@@ -14,6 +14,20 @@ You can integrate Gemini in your project with less than 3 lines of code.
 
 ## Features
 
+**IMPORTANT**
+
+If you were using the version 1.2 of the package, read the changelog on our github carefully to know how to migrate to this new version to avoid errors on your projects. It is a major update, so expect slightly syntax change.
+
+### TODO (v2.x)
+- [ ] Add support to image generation (powered by 'Imagen 3' by Gemini)
+- [ ] Add support to 2-ways streaming, which will allow to make projects like the Gemini Studio, where live video/audio is processed in real time.
+- [ ] Add token information and token limits.
+
+Current token usage based on Gemini Guides:
+- Images: Fixed rate of 258 tokens per file
+- Video: Fixed rate of 263 tokens per second
+- Audio: Fixed rate of 32 tokens per second
+
 ## Installation
 
 Install the package using the following command.
@@ -107,9 +121,9 @@ console.log(await chat.send("Who am I?"))
 const chatHistory = chat.save()
 ```
 
-### Sending Images
+### Sending Files (Images, Audios, Videos, PDFs)
 
-Sending images with your requests
+From the version 2 and above, you will be able to use files in your prompts. At the moment it only must be links, so if the image to be used is being uploaded by the user, you can upload it to a cloud service like Firebase, and get the link from it in order to be used, then delete it (or keep it).
 
 ```ts
 import { Gemini } from "@codixfy/gemini"
@@ -118,14 +132,14 @@ const gemini = new Gemini(API_KEY)
 
 console.log(
     await gemini.ask("What can you tell me about this image?", {
-        images: [
+        files: [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png",
         ],
     })
 )
 ```
 
-Sending images with your requests, stream response
+Sending files with your requests, stream response
 
 ```ts
 import { Gemini } from "@codixfy/gemini"
@@ -134,7 +148,7 @@ const gemini = new Gemini(API_KEY)
 
 console.log(
     await gemini.ask("What can you tell me about this image?", {
-        images: [
+        files: [
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/1200px-Google_2015_logo.svg.png",
         ],
         stream: (message) => {
@@ -143,6 +157,11 @@ console.log(
     })
 )
 ```
+
+**IMPORTANT**
+1. The syntax has slightly change from the version 1 to the version 2, so instead of using `images: []` now you have to use `files: []` in the parameter.
+2. For this initial 2.0 version we're not supporting the images the same way we did, now they must be a link in the internet, we will allow you to use `File` type directly on the arguments in future updates, but for now, this is the way it is.
+3. We will be implementing all the features from the new `2.0-flash` model in future updates, which include 2-ways streaming, screen content access, and other features available on the `Gemini Studio` on the web, but for now, it is not yet available.
 
 ## Model Configurations
 
@@ -214,10 +233,11 @@ const gemini = new Gemini(API_KEY, {
 
 You can choose between the following models:
 
--   **gemini-1.0-pro**: The basic version, only does support text
+-   **[DEPRECATED] gemini-1.0-pro**: The basic version, only does support text
 -   **gemini-1.5-pro**: Multimodal
 -   **gemini-1.5-flash**: Multimodal, but quicker than the pro version (default selection)
 -   **gemini-pro-vision**: Multimodal
+- **gemini-2.0-flash**: The latest and most powerful model. Multimodal.
 
 You can now choose the lastest not stable model by adding:
 
