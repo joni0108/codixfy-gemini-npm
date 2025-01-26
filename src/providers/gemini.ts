@@ -1,5 +1,3 @@
-import { FileState, GoogleAIFileManager } from "@google/generative-ai/files"
-
 // Imports
 const {
     GoogleGenerativeAI,

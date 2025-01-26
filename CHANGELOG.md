@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## Patch v2.0.1
+- Build package and removed an unused import.
+
 ## Major v2.0.0
 This is our new major update, so expect incompatibility with projects made using the version v1.2, but we will let you know how to migrate.
 
