@@ -1,3 +1,5 @@
+import { FileState, GoogleAIFileManager } from "@google/generative-ai/files"
+
 // Imports
 const {
     GoogleGenerativeAI,
@@ -22,14 +24,16 @@ const Base64 = require("base64-js")
  * - "gemini-1.5-flash-latest": Latest variant in the flash series for Gemini version 1.5.
  */
 export type Models =
-    | "gemini-1.0-pro"
     | "gemini-pro-vision"
     | "gemini-1.5-pro"
     | "gemini-1.5-flash"
-    | "gemini-1.0-pro-latest"
     | "gemini-pro-vision-latest"
     | "gemini-1.5-pro-latest"
     | "gemini-1.5-flash-latest"
+    | "gemini-1.5-flash-8b-001"
+    | "gemini-1.5-flash-8b"
+    | "gemini-1.5-flash-8b-latest"
+    | "gemini-2.0-flash"
 
 /**
  * Configuration options for Gemini service.
@@ -71,7 +75,7 @@ export type ContentsType = [
  * - "image/gif": Indicates that the image file is in GIF format.
  * - "image/webp": Indicates that the image file is in WebP format.
  */
-export type MimeType = "image/png" | "image/jpeg" | "image/gif" | "image/webp"
+export type MimeType = "image/png" | "image/jpeg" | "image/gif" | "image/webp" | "video/mp4" | "audio/wav" | "audio/mp3" | "audio/aac"
 
 // Handles the messaging without context
 /**
@@ -81,16 +85,24 @@ export class Gemini {
     private genAI: any
     protected model: any
     private currentModel: Models
+    private apiKey: string
 
     constructor(apiKey: string, options?: GeminiOptions) {
         this.genAI = new GoogleGenerativeAI(apiKey)
+        this.apiKey = apiKey
 
         this.currentModel = "gemini-1.5-flash"
 
         if (options?.model) {
             this.currentModel = options.model
 
-            if (options?.useLatestModel) {
+             //todo: Remove this requirement when gemini 2.0 gets out of experimental.
+            if(this.currentModel === "gemini-2.0-flash") {
+                this.currentModel += "-exp"
+            }
+
+            //todo: Remove this requirement when gemini 2.0 gets out of experimental.
+            if(this.currentModel === "gemini-2.0-flash" && !options?.useLatestModel) {
                 this.currentModel += "-latest"
             }
         }
@@ -135,23 +147,24 @@ export class Gemini {
     async ask(
         message: string,
         extra?: {
-            images?: string[]
+            files?: string[]
             stream?: (data: string) => void
         }
     ) {
-        const partsWithImages: any = []
+        const partsWithFiles: any = []
 
-        if (extra?.images && extra.images.length > 0) {
+        if (extra?.files && extra.files.length > 0) {
             // Check if the model supports images
             if (this.currentModel === "gemini-pro-vision") {
                 throw new Error(
-                    `This model does not support images. Current model: ${this.currentModel}`
+                    `This model does not support files. Current model: ${this.currentModel}`
                 )
             }
 
-            for (const image of extra.images) {
-                partsWithImages.push(
-                    await GeminiUtils.fileToGenerativePart(image)
+            for (const file of extra.files) {
+                partsWithFiles.push({
+                    text: "Link: " + file,
+                }
                 )
             }
         }
@@ -161,9 +174,9 @@ export class Gemini {
                 role: "user",
                 parts: [
                     {
-                        text: message,
+                        text: message
                     },
-                    ...partsWithImages,
+                    ...partsWithFiles,
                 ],
             },
         ]
@@ -210,13 +223,13 @@ class GeminiChat {
     async send(
         message: string,
         extra?: {
-            images?: string[]
+            files?: string[]
             stream?: (data: string) => void
         }
     ) {
-        const partsWithImages: any = []
+        const partsWithFiles: any = []
 
-        if (extra?.images && extra.images.length > 0) {
+        if (extra?.files && extra.files.length > 0) {
             // Check if the model supports images
             if (this.currentModel === "gemini-pro-vision") {
                 throw new Error(
@@ -224,9 +237,10 @@ class GeminiChat {
                 )
             }
 
-            for (const image of extra.images) {
-                partsWithImages.push(
-                    await GeminiUtils.fileToGenerativePart(image)
+            for (const file of extra.files) {
+                partsWithFiles.push({
+                    text: "Link: " + file,
+                }
                 )
             }
         }
@@ -241,7 +255,7 @@ class GeminiChat {
                 {
                     text: message,
                 },
-                ...partsWithImages,
+                ...partsWithFiles,
             ],
         })
 
@@ -278,10 +292,10 @@ class GeminiChat {
  * GeminiUtils class provides utility methods related to image processing.
  */
 export class GeminiUtils {
-    static async fileToGenerativePart(image: string) {
-        const mimeType: MimeType = await this.mimeTypeFromImage(image)
+    static async fileToGenerativePart(file: string) {
+        const mimeType: MimeType = await this.mimeTypeFromFile(file)
 
-        const image64 = await fetch(image)
+        const image64 = await fetch(file)
             .then((r) => r.arrayBuffer())
             .then((a) => Base64.fromByteArray(new Uint8Array(a)))
 
@@ -293,8 +307,8 @@ export class GeminiUtils {
         }
     }
 
-    static async mimeTypeFromImage(image: string) {
-        const extension = image.split(".")[image.split(".").length - 1]
+    static async mimeTypeFromFile(file: string) {
+        const extension = file.split(".")[file.split(".").length - 1]
 
         switch (extension) {
             case "jpg":
@@ -306,8 +320,16 @@ export class GeminiUtils {
                 return "image/gif"
             case "webp":
                 return "image/webp"
+            case "mp4":
+                return "video/mp4"
+            case "wav":
+                return "audio/wav"
+            case "mp3":
+                return "audio/mp3"
+            case "aac":
+                return "audio/aac"
             default:
-                throw new Error("Unsupported image type")
+                throw new Error("Unsupported file type (${extension})")
         }
     }
 }
